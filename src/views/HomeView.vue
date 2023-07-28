@@ -28,7 +28,7 @@
                 <div class="dropdown">
                     <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        {{ userName }} {{ userSurname }}
+                        {{ activeUser.userName }} {{ activeUser.userSurname }}
                     </button>
                     <div class="dropdown-menu dropdown-menu-end p-0 mt-1">
                         <RouterLink to="/Profile" class="dropdown-item p-2 hover:bg-success"><i
@@ -63,13 +63,13 @@
                             <div class="d-flex flex-row align-items-center mb-4">
                                 <div class="form-outline flex-fill mb-0">
                                     <textarea type="text" class="form-control" placeholder="Bugün nasıl hissediyorsun?"
-                                        style="resize: none;" rows="3" />
+                                        style="resize: none;" rows="3" v-model="newPost.postContent" />
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
-                            <button type="button" class="btn btn-primary btn-sm">Paylaş</button>
+                            <button type="button" class="btn btn-primary btn-sm" @click="sharePost()">Paylaş</button>
                         </div>
                     </div>
                 </div>
@@ -97,13 +97,14 @@
                     sodales at urna non, sagittis commodo orci. Aenean interdum cursus erat, et gravida arcu blandit id.
                     Nulla ut sollicitudin ipsum. Curabitur felis est, fermentum in odio quis, iaculis aliquam quam.</p>
             </div>
-            <div class="card-footer d-flex justify-content-between" >
+            <div class="card-footer d-flex justify-content-between">
                 <div class="post-info d-flex" style="gap: 15px; align-items: center;">
                     <span><i class="fa-solid fa-heart"></i> 17</span>
                     <span><i class="fa-solid fa-comment"></i> 5</span>
                 </div>
                 <div class="show-post">
-                    <button class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı gör</button>
+                    <button class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı
+                        gör</button>
                 </div>
             </div>
         </div>
@@ -129,13 +130,14 @@
                     sodales at urna non, sagittis commodo orci. Aenean interdum cursus erat, et gravida arcu blandit id.
                     Nulla ut sollicitudin ipsum. Curabitur felis est, fermentum in odio quis, iaculis aliquam quam.</p>
             </div>
-            <div class="card-footer d-flex justify-content-between" >
+            <div class="card-footer d-flex justify-content-between">
                 <div class="post-info d-flex" style="gap: 15px; align-items: center;">
                     <span><i class="fa-solid fa-heart"></i> 7</span>
                     <span><i class="fa-solid fa-comment"></i> 5</span>
                 </div>
                 <div class="show-post">
-                    <button class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı gör</button>
+                    <button class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı
+                        gör</button>
                 </div>
             </div>
         </div>
@@ -161,16 +163,17 @@
                     sodales at urna non, sagittis commodo orci. Aenean interdum cursus erat, et gravida arcu blandit id.
                     Nulla ut sollicitudin ipsum. Curabitur felis est, fermentum in odio quis, iaculis aliquam quam.</p>
             </div>
-            <div class="card-footer d-flex justify-content-between" >
+            <div class="card-footer d-flex justify-content-between">
                 <div class="post-info d-flex" style="gap: 15px; align-items: center;">
                     <span><i class="fa-solid fa-heart"></i> 3</span>
                     <span><i class="fa-solid fa-comment"></i> 2</span>
                 </div>
                 <div class="show-post">
-                    <button class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı gör</button>
+                    <button class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı
+                        gör</button>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </template>
@@ -182,9 +185,16 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            userName: null,
-            userSurname: null,
-            url: "http://localhost:3000/api/"
+            activeUser: {
+                userName: null,
+                userSurname: null,
+                userID: null,
+            },
+            url: "http://localhost:3000/api/",
+            newPost: {
+                postContent: null,
+                postOwner: null,
+            }
         }
     },
     created() {
@@ -203,8 +213,21 @@ export default {
         getUserInfo() {
             axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
-                    this.userName = res.data.user.userName
-                    this.userSurname = res.data.user.userSurname
+                    this.activeUser.userName = res.data.user.userName
+                    this.activeUser.userSurname = res.data.user.userSurname
+                    this.activeUser.userID = res.data.user._id
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+        },
+        sharePost() {
+            this.newPost.postOwner = this.activeUser.userID;
+            console.log(this.newPost);
+
+            axios.post(this.url + "addNewPost", this.newPost).then(res => {
+                if(res.status === 200){
+                    console.log(res.data.message);
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
