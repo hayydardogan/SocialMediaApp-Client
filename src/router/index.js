@@ -18,6 +18,16 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
+      path: '/Settings',
+      name: 'usersettings',
+      component: () => import('../views/SettingsView.vue')
+    },
+    {
+      path: '/Profile/:nick',
+      name: 'userprofilewithnick',
+      component: () => import('../views/ProfileView.vue')
+    },
+    {
       path: '/PostDetails/:id',
       name: 'postdetailswithid',
       // route level code-splitting
