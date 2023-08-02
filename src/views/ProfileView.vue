@@ -14,14 +14,14 @@ import Navbar from '../components/Navbar.vue'
                                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
                                     alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
                                     style="width: 150px; z-index: 1">
-                                <button type="button" class="btn btn-outline-success" data-mdb-ripple-color="dark"
+                                <RouterLink to="/Settings" type="button" class="btn btn-outline-success" data-mdb-ripple-color="dark"
                                     style="z-index: 1;">
                                     Ayarlar
-                                </button>
+                                </RouterLink>
                             </div>
                             <div class="ms-3" style="margin-top: 130px;">
                                 <h5>{{ userInfo.userName }} {{ userInfo.userSurname }}</h5>
-                                <p>{{ userInfo.userNick }}</p>
+                                <p>{{ userInfo.userNick }} </p>
                             </div>
                         </div>
                         <div class="p-4 text-black" style="background-color: #f8f9fa;">
@@ -91,9 +91,11 @@ export default {
                 userSurname: null,
                 userEmail: null,
                 userNick: null,
-                userImage: null
+                userImage: null,
+                userID: null
             },
             url: "http://localhost:3000/api/",
+            posts: {}
         }
     },
     methods: {
@@ -104,10 +106,15 @@ export default {
                     this.userInfo.userSurname = res.data.user.userSurname,
                     this.userInfo.userEmail = res.data.user.userEmail,
                     this.userInfo.userNick = res.data.user.userNick,
-                    this.userInfo.userImage = res.data.user.userImage
+                    this.userInfo.userImage = res.data.user.userImage,
+                    this.userInfo.userID = res.data.user._id
             }).catch(err => {
                 console.log("There is an error  :" + err.message);
             })
+        },
+        getPosts(){
+            const userID = this.userInfo.userID;
+            
         }
     },
     created() {

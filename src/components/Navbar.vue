@@ -28,7 +28,7 @@
                         {{ activeUser.userName }} {{ activeUser.userSurname }}
                     </button>
                     <div class="dropdown-menu dropdown-menu-end p-0 mt-1">
-                        <RouterLink to="/Profile" class="dropdown-item p-2 hover:bg-success"><i
+                        <RouterLink :to="'/Profile/' + activeUser.userNick" class="dropdown-item p-2 hover:bg-success"><i
                                 class="fa-solid fa-user"></i> Profil</RouterLink>
                         <RouterLink to="/Settings" class="dropdown-item p-2"><i class="fa-solid fa-gear"></i> Ayarlar
                         </RouterLink>
@@ -51,6 +51,7 @@ export default {
                 userName: null,
                 userSurname: null,
                 userID: null,
+                userNick: null
             },
             url: "http://localhost:3000/api/"
         }
@@ -75,7 +76,8 @@ export default {
                 if (res.status === 200) {
                     this.activeUser.userName = res.data.user.userName
                     this.activeUser.userSurname = res.data.user.userSurname
-                    this.activeUser.userID = res.data.user._id
+                    this.activeUser.userID = res.data.user._id,
+                    this.activeUser.userNick = res.data.user.userNick
                 }
 
                 if (res.status === 401) {
