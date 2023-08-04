@@ -54,9 +54,15 @@ import moment from 'moment'
                                 height="60" />
                             <div>
                                 <div class="d-flex gap-2">
-                                    <h6 class="fw-bold mb-1">{{ x.commentOwner.userName }} {{ x.commentOwner.userSurname }}
-                                    </h6>
-                                    <p class="mb-0 badge text-bg-success">{{ moment(x.commentDate).format("DD/MM/YYYY HH: mm") }}</p>
+                                    <div class="d-flex gap-2">
+                                        <h6 class="fw-bold mb-1">{{ x.commentOwner.userName }} {{ x.commentOwner.userSurname
+                                        }} </h6>
+                                        <p class="mb-0 badge text-bg-success" style="height: 25px;">{{
+                                            moment(x.commentDate).format("DD/MM/YYYY HH:mm") }}</p>
+                                        <button v-if="(x.commentOwner._id === userID)" @click="deleteComment(x._id)"
+                                            class="btn btn-sm btn-danger"><i class="fa-regular fa-trash-can"></i></button>
+                                    </div>
+
                                 </div>
                                 <p class="mb-0">{{ x.commentContent }}</p>
                             </div>
@@ -114,8 +120,6 @@ export default {
                 commentPost: this.postID,
                 commentContent: this.commentContent
             }
-
-        
 
             axios.post(this.url + "toComment", { newComment: newComment }).then(res => {
                 if (res.status === 200) {
@@ -180,6 +184,15 @@ export default {
             axios.post(this.url + "deletePost" + "/" + post_id).then(res => {
                 if (res.status === 200) {
                     this.$router.push("/");
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+        },
+        deleteComment(comment_id) {
+            axios.put(this.url + "deleteComment" + "/" + comment_id).then(res => {
+                if (res.status === 200) {
+                    this.getComments();
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);

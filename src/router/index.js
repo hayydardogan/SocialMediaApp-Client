@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-
+import ProfileView from '../views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
+      path: '/Notifications',
+      name: 'notifications',
+      component: () => import('../views/NotificationView.vue')
+    },
+    {
       path: '/Settings',
       name: 'usersettings',
       component: () => import('../views/SettingsView.vue')
@@ -31,7 +36,7 @@ const router = createRouter({
     {
       path: '/Profile/:nick',
       name: 'userprofilewithnick',
-      component: () => import('../views/ProfileView.vue')
+      component: ProfileView
     },
     {
       path: '/PostDetails/:id',

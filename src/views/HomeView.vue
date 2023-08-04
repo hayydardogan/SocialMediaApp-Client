@@ -93,10 +93,10 @@ export default {
         sharePost() {
             this.newPost.postOwner = this.userID;
 
-            axios.post(this.url + "addNewPost", this.newPost).then(res => {
-                if(res.status === 200){
+            axios.post(this.url + "addNewPost", { newPost: this.newPost }).then(res => {
+                if (res.status === 200) {
                     $('#newPostModal').modal('hide');
-                    this.$router.push("/PostDetails/"+res.data.post._id);
+                    this.$router.push("/PostDetails/" + res.data.post._id);
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);

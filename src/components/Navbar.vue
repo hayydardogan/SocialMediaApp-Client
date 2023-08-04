@@ -80,6 +80,7 @@ export default {
                     this.activeUser.userNick = res.data.user.userNick
                 }
 
+
                 if (res.status === 401) {
                     console.log("Token geçersiz veya süresi dolmuş.");
                     this.$router.push("/Login");
