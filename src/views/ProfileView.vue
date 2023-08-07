@@ -10,11 +10,11 @@ import moment from 'moment'
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col ">
                     <div class="card">
-                        <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
+                        <div class="rounded-top text-white d-flex flex-row"
+                            :style="{ backgroundImage: `url(${userInfo.userCoverImage})`, height: '200px', backgroundSize: 'cover' }">
                             <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
-                                <img :src="userInfo.userImage"
-                                    alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
-                                    style="width: 150px; z-index: 1">
+                                <img :src="userInfo.userImage" alt="Generic placeholder image"
+                                    class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
                                 <RouterLink v-if="userInfo.userNick == activeUser.userNick" to="/Settings" type="button"
                                     class="btn btn-outline-success" data-mdb-ripple-color="dark" style="z-index: 1;">
                                     <i class="fa-solid fa-gear"></i>
@@ -26,10 +26,17 @@ import moment from 'moment'
                                     Takip et
                                 </button>
                             </div>
-                            <div class="ms-3" style="margin-top: 100px;">
-                                <h5>{{ userInfo.userName }} {{ userInfo.userSurname }}</h5>
-                                <p>@{{ userInfo.userNick }} </p>
-                                <p>{{ userInfo.userBiography }} </p>
+                            <div class="ms-3" style="margin-top: 100px; display: flex; flex-direction: column;">
+                                <div>
+                                    <h5 class="badge text-bg-light border" style="font-size: 10pt;">{{ userInfo.userName }} {{
+                                        userInfo.userSurname }}</h5>
+                                </div>
+                                <div>
+                                    <p class="badge text-bg-light border" style="font-size: 9pt;">@{{ userInfo.userNick }} </p>
+                                </div>
+                                <div>
+                                    <p class="badge text-bg-light border" style="font-size: 8pt;">{{ userInfo.userBiography }}</p>
+                                </div>
                             </div>
                         </div>
                         <div class="p-4 text-black" style="background-color: #f8f9fa;">
@@ -39,11 +46,11 @@ import moment from 'moment'
                                     <p class="small text-muted mb-0">Paylaşım</p>
                                 </div>
                                 <div class="px-3">
-                                    <p class="mb-1 h5">5</p>
+                                    <p class="mb-1 h5"> {{ userInfo.userFollowerCount }}</p>
                                     <p class="small text-muted mb-0">Takipçi</p>
                                 </div>
                                 <div>
-                                    <p class="mb-1 h5">8</p>
+                                    <p class="mb-1 h5">{{ userInfo.userFollowingCount }}</p>
                                     <p class="small text-muted mb-0">Takip Edilen</p>
                                 </div>
                             </div>
@@ -64,7 +71,8 @@ import moment from 'moment'
                                             <span>{{ x.postOwner.userName }} {{ x.postOwner.userSurname }}</span>
                                         </div>
                                         <div style="display: flex;align-items: center;">
-                                            <span><i class="fa-regular fa-clock"></i> {{ moment(x.postDate).format("DD/MM/YYYY HH:mm") }}</span>
+                                            <span><i class="fa-regular fa-clock"></i> {{
+                                                moment(x.postDate).format("DD/MM/YYYY HH:mm") }}</span>
                                         </div>
                                     </div>
                                     <div class="card-body">
@@ -72,12 +80,12 @@ import moment from 'moment'
                                     </div>
                                     <div class="card-footer d-flex justify-content-between">
                                         <div class="post-info d-flex" style="gap: 15px; align-items: center;">
-                                            <span><i class="fa-solid fa-heart"></i> {{  getLikeCount(x._id) }}</span>
-                                            <span><i class="fa-solid fa-comment"></i> {{ getCommentCount(x.id) }}</span>
+                                            <span><i class="fa-solid fa-heart text-danger"></i> {{ getLikeCount(x._id) }}</span>
+                                            <span><i class="fa-solid fa-comment text-primary"></i> {{ getCommentCount(x.id) }}</span>
                                         </div>
                                         <div class="show-post">
-                                            <RouterLink :to="'/PostDetails/' + x._id" class="btn btn-primary btn-sm text-white"><i
-                                                    class="fa-regular fa-eye"></i>
+                                            <RouterLink :to="'/PostDetails/' + x._id"
+                                                class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i>
                                                 Paylaşımı
                                                 gör </RouterLink>
                                         </div>
@@ -103,8 +111,11 @@ export default {
                 userEmail: null,
                 userNick: null,
                 userImage: null,
+                userCoverImage: null,
                 userID: null,
-                userBiography: null
+                userBiography: null,
+                userFollowerCount: 0, // Takipçi sayısı
+                userFollowingCount: 0 // Takip edilen syısı
             },
             url: "http://localhost:3000/api/",
             posts: {},
@@ -130,20 +141,33 @@ export default {
                         this.userInfo.userImage = res.data.user.userImage,
                         this.userInfo.userID = res.data.user._id,
                         this.userInfo.userBiography = res.data.user.userBiography
-                        this.getPosts();
+                    this.userInfo.userCoverImage = res.data.user.userCoverImage
+
+                    this.getPosts();
                 }
             }).catch(err => {
                 console.log("There is an error  :" + err.message);
             })
         },
+        getFollowCount() {
+            axios.get(this.url + "getFollowCount" + "/" + this.activeUser.userID).then(res => {
+                if (res.status === 200) {
+                    this.userInfo.userFollowerCount = res.data.count.followerCount;
+                    this.userInfo.userFollowingCount = res.data.count.followingCount;
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+        },
         getUserInfo() {
-            axios.get(this.url + "getUserInfo",  { headers: { token: localStorage.getItem("token") } }).then(res => {
+            axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
                     this.activeUser.userName = res.data.user.userName
                     this.activeUser.userSurname = res.data.user.userSurname
                     this.activeUser.userID = res.data.user._id,
                         this.activeUser.userNick = res.data.user.userNick
 
+                    this.getFollowCount();
 
                 }
 
@@ -166,14 +190,14 @@ export default {
                 console.log("There is an error : " + err.message);
             })
         },
-        getLikeCount(post_id){
+        getLikeCount(post_id) {
             axios.get(this.url + "getLikeCount" + "/" + post_id).then(res => {
                 return res.data.count;
             }).catch(err => {
                 console.log("There is an error : " + err.message);
             })
         },
-        getCommentCount(post_id){
+        getCommentCount(post_id) {
 
         }
     },
