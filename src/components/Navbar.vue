@@ -11,6 +11,9 @@
 
             <div style="margin-right: 20px; gap: 15px;" class="d-flex">
                 <div>
+                    <RouterLink to="/Search" class="btn btn-success btn-sm position-relative"><i class="fa-solid fa-magnifying-glass"></i></RouterLink>
+                </div>
+                <div>
                     <RouterLink to="/Messages" class="btn btn-success btn-sm position-relative"><i
                             class="fa-regular fa-message"></i><span
                             class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">

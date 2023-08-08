@@ -20,22 +20,24 @@ import moment from 'moment'
                                     <i class="fa-solid fa-gear"></i>
                                     Ayarlar
                                 </RouterLink>
-                                <button v-else type="button" class="btn btn-outline-success" data-mdb-ripple-color="dark"
-                                    style="z-index: 1;">
-                                    <i class="fa-solid fa-plus"></i>
-                                    Takip et
+                                <button id="followButton" v-else type="button" class="btn btn-outline-success"
+                                    data-mdb-ripple-color="dark" style="z-index: 1;"
+                                    @click="followRelation ? followUser() : unfollowUser()">
+
                                 </button>
                             </div>
                             <div class="ms-3" style="margin-top: 100px; display: flex; flex-direction: column;">
                                 <div>
-                                    <h5 class="badge text-bg-light border" style="font-size: 10pt;">{{ userInfo.userName }} {{
-                                        userInfo.userSurname }}</h5>
+                                    <h5 class="badge text-bg-light border" style="font-size: 10pt;">{{ userInfo.userName }}
+                                        {{ userInfo.userSurname }}</h5>
                                 </div>
                                 <div>
-                                    <p class="badge text-bg-light border" style="font-size: 9pt;">@{{ userInfo.userNick }} </p>
+                                    <p class="badge text-bg-light border" style="font-size: 9pt;">@{{ userInfo.userNick }}
+                                    </p>
                                 </div>
                                 <div>
-                                    <p class="badge text-bg-light border" style="font-size: 8pt;">{{ userInfo.userBiography }}</p>
+                                    <p class="badge text-bg-light border" style="font-size: 8pt;">{{ userInfo.userBiography
+                                    }}</p>
                                 </div>
                             </div>
                         </div>
@@ -80,8 +82,10 @@ import moment from 'moment'
                                     </div>
                                     <div class="card-footer d-flex justify-content-between">
                                         <div class="post-info d-flex" style="gap: 15px; align-items: center;">
-                                            <span><i class="fa-solid fa-heart text-danger"></i> {{ getLikeCount(x._id) }}</span>
-                                            <span><i class="fa-solid fa-comment text-primary"></i> {{ getCommentCount(x.id) }}</span>
+                                            <span><i class="fa-solid fa-heart text-danger"></i> {{ getLikeCount(x._id)
+                                            }}</span>
+                                            <span><i class="fa-solid fa-comment text-primary"></i> {{ getCommentCount(x.id)
+                                            }}</span>
                                         </div>
                                         <div class="show-post">
                                             <RouterLink :to="'/PostDetails/' + x._id"
@@ -126,7 +130,8 @@ export default {
                 userNick: null
             },
             likeCount: 0,
-            commentCount: 0
+            commentCount: 0,
+            followRelation: false
         }
     },
     methods: {
@@ -154,6 +159,8 @@ export default {
                 if (res.status === 200) {
                     this.userInfo.userFollowerCount = res.data.count.followerCount;
                     this.userInfo.userFollowingCount = res.data.count.followingCount;
+
+                    this.getRelation();
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
@@ -199,6 +206,40 @@ export default {
         },
         getCommentCount(post_id) {
 
+        },
+        getRelation() {
+            if (this.userInfo.userNick != this.activeUser.userNick) {
+                axios.get(this.url + "/getFollowerRelation" + "/" + this.activeUser.userID + "&" + this.userInfo.userID).then(res => {
+                    if (res.status === 200 && res.data.result == true) {
+                        let item = document.getElementById("followButton");
+                        item.innerHTML = '<i class="fa-solid fa-xmark"></i> Takibi Bırak';
+                        this.followRelation = false;
+                    } else {
+                        let item = document.getElementById("followButton");
+                        item.innerHTML = '<i class="fa-solid fa-plus"></i> Takip Et';
+                        this.followRelation = true;
+                    }
+                }).catch(err => {
+                    console.log("There is an error : " + err.message);
+                })
+            }
+
+        },
+        followUser() {
+            axios.post(this.url + "addFollowerRelation" + "/" + this.activeUser.userID + "&" + this.userInfo.userID).then(res => {
+                if (res.status === 200 && res.data.result == true) {
+                    this.followRelation = false;
+                    this.getRelation();
+                }
+            })
+        },
+        unfollowUser() {
+            axios.delete(this.url + "removeFollowerRelation" + "/" + this.activeUser.userID + "&" + this.userInfo.userID).then(res => {
+                if (res.status === 200 && res.data.result == true) {
+                    this.followRelation = true;
+                    this.getRelation();
+                }
+            })
         }
     },
     created() {
