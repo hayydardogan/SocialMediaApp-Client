@@ -62,8 +62,11 @@ import moment from 'moment'
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <p class="lead fw-normal mb-0">Son paylaşımlar</p>
                             </div>
-                            <div v-if="posts.length <= 0">
-                                <div class="alert alert-info">Henüz hiç paylaşım yapmadın.</div>
+                            <div v-if="posts.length <= 0 && userInfo.userNick != activeUser.userNick">
+                                <div class="alert alert-info">Bu kişi henüz hiçbir paylaşımda bulunmadı.</div>
+                            </div>
+                            <div v-if="posts.length <= 0 && userInfo.userNick == activeUser.userNick">
+                                <div class="alert alert-info">Henüz hiçbir paylaşım yapmadın.</div>
                             </div>
                             <div v-else class="row g-2">
                                 <div v-for="x in posts" class="card bg-light mb-3">
@@ -155,7 +158,7 @@ export default {
             })
         },
         getFollowCount() {
-            axios.get(this.url + "getFollowCount" + "/" + this.activeUser.userID).then(res => {
+            axios.get(this.url + "getFollowCount" + "/" + this.userInfo.userID).then(res => {
                 if (res.status === 200) {
                     this.userInfo.userFollowerCount = res.data.count.followerCount;
                     this.userInfo.userFollowingCount = res.data.count.followingCount;

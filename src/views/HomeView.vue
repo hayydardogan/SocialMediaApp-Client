@@ -131,7 +131,7 @@ import moment from 'moment'
 
     <section style="background-color: #F0F2F5; height: 100vh;">
 
-        <div class="container py-5" >
+        <div class="container py-5">
             <div class="new-post d-flex justify-content-end mb-3">
                 <!-- Yeni gönderi modal açma butonu -->
                 <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#newPostModal">
@@ -164,8 +164,14 @@ import moment from 'moment'
                     </div>
                 </div>
             </div>
+            <div v-if="posts.length <= 0" class="alert alert-info">
+                <h4 class="alert-heading">Sessizlik!</h4>
+                <p>Şimdilik burada görüntülenecek bir şey bulunamadı.</p>
+                <hr>
+                <p class="mb-0">Daha fazla kişiyi takip et, daha fazla keşfet!</p>
 
-            <div class="main-timeline">
+            </div>
+            <div v-else class="main-timeline">
                 <div v-for="(x, index) in posts" class="timeline" :class="{ left: index % 2 == 0, right: index % 2 != 0 }">
                     <div class="card">
                         <div class="card-body p-2 d-flex justify-content-between" style="border-bottom: 1px solid #d9e1ec;">
@@ -185,7 +191,7 @@ import moment from 'moment'
                         <div class="card-body">
                             <p class="card-text">{{ x.postContent }}</p>
                         </div>
-                        <div class="card-footer d-flex justify-content-between">
+                        <div class="card-footer d-flex justify-content-between bg-white">
                             <div class="post-info d-flex" style="gap: 15px; align-items: center;">
                                 <span><i class="fa-solid fa-heart text-danger"></i> 17</span>
                                 <span><i class="fa-solid fa-comment text-primary"></i> 5</span>
@@ -201,38 +207,6 @@ import moment from 'moment'
             </div>
         </div>
     </section>
-
-    <!-- <div class="container mt-5">
-
-        <div class="card bg-light mb-3" v-for="x in posts">
-            <div class="card-header d-flex justify-content-between">
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <RouterLink :to="'/Profile/' + x.postOwner.userNick"><img :src="x.postOwner.userImage"
-                            class="rounded-circle" style="width: 30px;" /></RouterLink>
-                    <RouterLink class="text-decoration-none text-dark" :to="'/Profile/' + x.postOwner.userNick"><span>{{
-                        x.postOwner.userName }} {{ x.postOwner.userSurname }}</span></RouterLink>
-                </div>
-                <div style="display: flex;align-items: center;">
-                    <span><i class="fa-regular fa-clock"></i> {{ moment(x.postDate).format("DD/MM/YYYY HH:mm") }}</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p class="card-text">{{ x.postContent }}</p>
-            </div>
-            <div class="card-footer d-flex justify-content-between">
-                <div class="post-info d-flex" style="gap: 15px; align-items: center;">
-                    <span><i class="fa-solid fa-heart"></i> 17</span>
-                    <span><i class="fa-solid fa-comment"></i> 5</span>
-                </div>
-                <div class="show-post">
-                    <RouterLink :to="{ name: 'postdetailswithid', params: { id: x._id } }"
-                        class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i> Paylaşımı
-                        gör </RouterLink>
-                </div>
-            </div>
-        </div>
-
-    </div> -->
 </template>
 
 <script>
@@ -247,11 +221,11 @@ export default {
                 postOwner: null,
             },
             userID: null,
-            posts: {}
+            posts: []
         }
     },
     created() {
-        this.getPosts();
+
         this.getUserInfo();
     },
     methods: {
@@ -268,9 +242,9 @@ export default {
             })
         },
         getPosts() {
-            axios.get(this.url + "getPosts").then(res => {
+            axios.get(this.url + "getPosts" + "/" + this.userID).then(res => {
                 if (res.status === 200) {
-                    this.posts = res.data
+                    this.posts = res.data.myPosts
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
@@ -280,6 +254,7 @@ export default {
             axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
                     this.userID = res.data.user._id
+                    this.getPosts();
                 }
 
                 if (res.status === 401) {

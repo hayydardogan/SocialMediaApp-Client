@@ -8,8 +8,7 @@ import Navbar from '../components/Navbar.vue'
 
 body {
     background-color: #eee;
-    font-family: "Poppins", sans-serif;
-    font-weight: 300;
+    
 }
 
 .card {

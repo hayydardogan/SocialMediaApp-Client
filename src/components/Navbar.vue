@@ -20,10 +20,7 @@
                         </span></RouterLink>
                 </div>
                 <div>
-                    <RouterLink to="/Notifications" class="btn btn-success btn-sm position-relative"><i
-                            class="fa-regular fa-bell"></i><span
-                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                        </span></RouterLink>
+                    <RouterLink to="/Notifications" class="btn btn-success btn-sm position-relative" id="notificationBtn" @click="readNotification()"><i class="fa-regular fa-bell"></i></RouterLink>
                 </div>
                 <div class="dropdown">
                     <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -81,6 +78,8 @@ export default {
                     this.activeUser.userSurname = res.data.user.userSurname
                     this.activeUser.userID = res.data.user._id,
                     this.activeUser.userNick = res.data.user.userNick
+
+                    this.checkNotification();
                 }
 
 
@@ -91,6 +90,24 @@ export default {
             }).catch(err => {
                 console.log("There is an error : " + err.message);
             })           
+        },
+        checkNotification(){
+            axios.get(this.url + "getUnreadNotification" + "/" + this.activeUser.userID).then(res => {
+                if(res.status === 200 ){
+                    if(res.data.count > 0){
+                        let item = document.getElementById("notificationBtn");
+                        item.innerHTML += '<span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>'
+                    }
+                    
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+        },
+        readNotification(){
+            axios.put(this.url + "/readNotification" + "/" + this.activeUser.userID).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
         }
     },
     mounted(){
