@@ -106,14 +106,24 @@ export default {
             }
 
             axios.post(this.url + "addNewUser", newUser).then(res => {
-                let item = document.getElementById("infoAlert");
-                item.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right: 15px"></i>' + res.data.message;
-                item.style.display = "block";
+                if (res.status === 200 && res.data.result == true) {
+                    let item = document.getElementById("infoAlert");
+                    item.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right: 15px"></i>' + "Başarılı bir şekilde kayıt oldunuz. Giriş yapabilirsiniz.";
+                    this.User.userName = "",
+                        this.User.userSurname = "",
+                        this.User.userEmail = "",
+                        this.User.userNick = "",
+                        this.User.userPassword = ""
+                    item.style.display = "block";
+                    setTimeout(() => {
+                        this.$router.push("/Login");
+                    }, 1750);
+                }
 
             }).catch(err => {
                 console.log("There is an error : " + err.message);
             })
-            
+
 
         }
     },

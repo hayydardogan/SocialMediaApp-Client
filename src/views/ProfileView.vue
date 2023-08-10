@@ -3,7 +3,12 @@ import Navbar from '../components/Navbar.vue'
 import moment from 'moment'
 </script>
 
+
 <template>
+    <div class="vl-parent">
+        <loading v-model:active="isLoading" loader="bars" color="#198754" />
+
+    </div>
     <Navbar />
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
@@ -26,7 +31,7 @@ import moment from 'moment'
 
                                 </button>
                             </div>
-                            <div class="ms-3" style="margin-top: 100px; display: flex; flex-direction: column;">
+                            <div class="ms-3" style="margin-top: 90px; display: flex; flex-direction: column;">
                                 <div>
                                     <h5 class="badge text-bg-light border" style="font-size: 10pt;">{{ userInfo.userName }}
                                         {{ userInfo.userSurname }}</h5>
@@ -84,12 +89,7 @@ import moment from 'moment'
                                         <p class="card-text">{{ x.postContent }}</p>
                                     </div>
                                     <div class="card-footer d-flex justify-content-between">
-                                        <div class="post-info d-flex" style="gap: 15px; align-items: center;">
-                                            <span><i class="fa-solid fa-heart text-danger"></i> {{ getLikeCount(x._id)
-                                            }}</span>
-                                            <span><i class="fa-solid fa-comment text-primary"></i> {{ getCommentCount(x.id)
-                                            }}</span>
-                                        </div>
+                                        <div></div>
                                         <div class="show-post">
                                             <RouterLink :to="'/PostDetails/' + x._id"
                                                 class="btn btn-primary btn-sm text-white"><i class="fa-regular fa-eye"></i>
@@ -109,6 +109,8 @@ import moment from 'moment'
 
 <script>
 import axios from 'axios';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
 export default {
     data() {
         return {
@@ -134,11 +136,15 @@ export default {
             },
             likeCount: 0,
             commentCount: 0,
-            followRelation: false
+            followRelation: false,
+            title: null,
+            isLoading: false,
+            fullPage: true
         }
     },
     methods: {
         getUserInfoByNick() {
+            this.isLoading = true;
             let nick = this.$route.params.nick;
             axios.get(this.url + "getUserInfoByNick/" + nick).then(res => {
                 if (res.status === 200) {
@@ -150,8 +156,9 @@ export default {
                         this.userInfo.userID = res.data.user._id,
                         this.userInfo.userBiography = res.data.user.userBiography
                     this.userInfo.userCoverImage = res.data.user.userCoverImage
+                    this.title = res.data.user.userName + " " + res.data.user.userSurname
+                    this.getFollowCount();
 
-                    this.getPosts();
                 }
             }).catch(err => {
                 console.log("There is an error  :" + err.message);
@@ -162,8 +169,8 @@ export default {
                 if (res.status === 200) {
                     this.userInfo.userFollowerCount = res.data.count.followerCount;
                     this.userInfo.userFollowingCount = res.data.count.followingCount;
+                    this.getPosts();
 
-                    this.getRelation();
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
@@ -176,8 +183,8 @@ export default {
                     this.activeUser.userSurname = res.data.user.userSurname
                     this.activeUser.userID = res.data.user._id,
                         this.activeUser.userNick = res.data.user.userNick
+                    this.getUserInfoByNick();
 
-                    this.getFollowCount();
 
                 }
 
@@ -196,19 +203,11 @@ export default {
             let userID = this.userInfo.userID;
             axios.get(this.url + "getMyPosts" + "/" + userID).then(res => {
                 this.posts = res.data.myPosts;
-            }).catch(err => {
-                console.log("There is an error : " + err.message);
-            })
-        },
-        getLikeCount(post_id) {
-            axios.get(this.url + "getLikeCount" + "/" + post_id).then(res => {
-                return res.data.count;
-            }).catch(err => {
-                console.log("There is an error : " + err.message);
-            })
-        },
-        getCommentCount(post_id) {
 
+                this.getRelation();
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
         },
         getRelation() {
             if (this.userInfo.userNick != this.activeUser.userNick) {
@@ -221,12 +220,13 @@ export default {
                         let item = document.getElementById("followButton");
                         item.innerHTML = '<i class="fa-solid fa-plus"></i> Takip Et';
                         this.followRelation = true;
+
                     }
                 }).catch(err => {
                     console.log("There is an error : " + err.message);
                 })
             }
-
+            this.isLoading = false;
         },
         followUser() {
             axios.post(this.url + "addFollowerRelation" + "/" + this.activeUser.userID + "&" + this.userInfo.userID).then(res => {
@@ -247,7 +247,7 @@ export default {
     },
     created() {
         this.getUserInfo();
-        this.getUserInfoByNick();
+
 
     }
 }

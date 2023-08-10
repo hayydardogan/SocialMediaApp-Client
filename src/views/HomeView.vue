@@ -168,8 +168,7 @@ import moment from 'moment'
                 <h4 class="alert-heading">Sessizlik!</h4>
                 <p>Şimdilik burada görüntülenecek bir şey bulunamadı.</p>
                 <hr>
-                <p class="mb-0">Daha fazla kişiyi takip et, daha fazla keşfet!</p>
-
+                <p class="mb-0">Daha fazla kişiyi takip et, daha fazla gönderiye eriş!</p>
             </div>
             <div v-else class="main-timeline">
                 <div v-for="(x, index) in posts" class="timeline" :class="{ left: index % 2 == 0, right: index % 2 != 0 }">
@@ -192,9 +191,8 @@ import moment from 'moment'
                             <p class="card-text">{{ x.postContent }}</p>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-white">
-                            <div class="post-info d-flex" style="gap: 15px; align-items: center;">
-                                <span><i class="fa-solid fa-heart text-danger"></i> 17</span>
-                                <span><i class="fa-solid fa-comment text-primary"></i> 5</span>
+                            <div>
+                                
                             </div>
                             <div class="show-post">
                                 <RouterLink :to="{ name: 'postdetailswithid', params: { id: x._id } }"
@@ -225,7 +223,6 @@ export default {
         }
     },
     created() {
-
         this.getUserInfo();
     },
     methods: {

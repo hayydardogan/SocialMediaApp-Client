@@ -3,6 +3,10 @@ import Navbar from '../components/Navbar.vue'
 import moment from 'moment'
 </script>
 <template>
+    <div class="vl-parent">
+        <loading v-model:active="isLoading" loader="bars" color="#198754" />
+
+    </div>
     <Navbar />
     <div class="container mt-5">
         <div class="card bg-light mb-3">
@@ -59,7 +63,7 @@ import moment from 'moment'
                                         }} </h6>
                                         <p class="mb-0 badge text-bg-success" style="height: 25px;">{{
                                             moment(x.commentDate).format("DD/MM/YYYY HH:mm") }}</p>
-                                        <button v-if="(x.commentOwner._id === userID)" @click="deleteComment(x._id)"
+                                        <button v-if="(x.commentOwner._id === userID) || (postDetails.postOwnerID === userID)" @click="deleteComment(x._id)"
                                             class="btn btn-sm btn-danger"><i class="fa-regular fa-trash-can"></i></button>
                                     </div>
 
@@ -76,6 +80,8 @@ import moment from 'moment'
 
 <script>
 import axios from "axios"
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
 export default {
 
     data() {
@@ -96,19 +102,22 @@ export default {
             },
             url: "http://localhost:3000/api/",
             commentContent: null,
-            comments: {}
+            comments: {},
+            isLoading: false,
+            fullPage: true
         }
     },
     created() {
         this.getPostInfo();
-        this.getUserInfo();
-        this.getComments();
+        
+       
     },
     methods: {
         getComments() {
             axios.get(this.url + "getComment/" + this.postID).then(res => {
                 if (res.status === 200) {
                     this.comments = res.data;
+                    this.isLoading = false;
                 }
             }).catch(err => {
                 console.log("There is an error." + err.message);
@@ -131,6 +140,7 @@ export default {
             })
         },
         getPostInfo() {
+            this.isLoading = true;
             axios.get(this.url + "getPostInfo" + "/" + this.postID).then(
                 res => {
                     if (res.status === 200) {
@@ -142,6 +152,7 @@ export default {
                             this.postDetails.postOwnerID = res.data.post[0].postOwner._id,
                             this.postDetails.postOwnerNick = res.data.post[0].postOwner.userNick,
                             this.postDetails.postID = res.data.post[0]._id;
+                            this.getUserInfo();
                     }
                 }
             ).catch(err => {
@@ -149,6 +160,11 @@ export default {
             })
 
             // Post beğeni sayısını çekme
+            this.getLikeCount();
+
+
+        },
+        getLikeCount() {
             axios.get(this.url + "getLikeCount" + "/" + this.postID).then(res => {
                 if (res.status === 200) {
                     this.postDetails.postLikeCount = res.data.count;
@@ -158,9 +174,13 @@ export default {
             })
 
             // Post yorum sayısını çekme
+            this.getCommentCount();
+        },
+        getCommentCount() {
             axios.get(this.url + "getCommentCount" + "/" + this.postID).then(res => {
                 if (res.status === 200) {
                     this.postDetails.postCommentCount = res.data.count;
+                    
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
@@ -170,6 +190,7 @@ export default {
             axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
                     this.userID = res.data.user._id
+                    this.getComments();
                 }
 
                 if (res.status === 401) {

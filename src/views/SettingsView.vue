@@ -38,6 +38,10 @@ import Navbar from '../components/Navbar.vue'
 }
 </style>
 <template>
+     <div class="vl-parent">
+        <loading v-model:active="isLoading"  loader="bars" color="#198754" />
+
+    </div>
     <Navbar />
     <!-- <div class="container mt-5" style=" background: #1A233A; border-radius: 25px; color: #bcd0f7; padding-top: 25px; padding-bottom: 50px;">
 
@@ -216,6 +220,8 @@ import Navbar from '../components/Navbar.vue'
 
 <script>
 import Toastify from 'toastify-js'
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
 export default {
 
     data() {
@@ -234,11 +240,14 @@ export default {
             passwordVal: {
                 newPassword1: null,
                 newPassword2: null
-            }
+            },
+            isLoading: false,
+            fullPage: true
         }
     },
     methods: {
         getUserInfo() {
+            this.isLoading = true;
             axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
                     this.userInfo.userName = res.data.user.userName,
@@ -249,6 +258,7 @@ export default {
                     this.userInfo.userBiography = res.data.user.userBiography,
                         this.userInfo.userID = res.data.user._id,
                         this.userInfo.userCoverImage = res.data.user.userCoverImage
+                        this.isLoading = false;
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
