@@ -88,7 +88,8 @@ import Navbar from '../components/Navbar.vue'
                         <div class="account-settings">
                             <div class="user-profile">
                                 <div class="user-avatar">
-                                    <img :src="userInfo.userImage">
+                                    <img :src="userInfo.userImage" style="position: relative; z-index: 1; border: 2px solid white;">
+                                    <img :src="userInfo.userCoverImage" style="border-radius: 25px; width: 80%; position: absolute; left: 30px; top: 15px; z-index: 0;">
                                 </div>
                                 <h5 class="user-name">{{ userInfo.userName }} {{ userInfo.userSurname }}</h5>
                                 <h6 class="user-email mb-2"><i class="fa-solid fa-at"></i> {{ userInfo.userNick }}</h6>

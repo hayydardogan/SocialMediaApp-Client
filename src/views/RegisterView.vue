@@ -102,7 +102,10 @@ export default {
                 userSurname: this.User.userSurname,
                 userEmail: this.User.userEmail,
                 userNick: this.User.userNick,
-                userPassword: this.User.userPassword
+                userPassword: this.User.userPassword,
+                userImage: null,
+                userBiography: null,
+                userCoverImage: null
             }
 
             axios.post(this.url + "addNewUser", newUser).then(res => {

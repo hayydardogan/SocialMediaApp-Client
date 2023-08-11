@@ -38,6 +38,9 @@ import moment from 'moment'
                     <span><i class="fa-solid fa-heart text-danger"></i> {{ postDetails.postLikeCount }}</span>
                     <span><i class="fa-solid fa-comment text-primary"></i> {{ postDetails.postCommentCount }}</span>
                 </div>
+                <div>
+                    <button class="btn btn-success btn-sm" @click="likeStatus ? dislikePost() : likePost()" id="likeButton"></button>
+                </div>
             </div>
         </div>
 
@@ -63,8 +66,10 @@ import moment from 'moment'
                                         }} </h6>
                                         <p class="mb-0 badge text-bg-success" style="height: 25px;">{{
                                             moment(x.commentDate).format("DD/MM/YYYY HH:mm") }}</p>
-                                        <button v-if="(x.commentOwner._id === userID) || (postDetails.postOwnerID === userID)" @click="deleteComment(x._id)"
-                                            class="btn btn-sm btn-danger"><i class="fa-regular fa-trash-can"></i></button>
+                                        <button
+                                            v-if="(x.commentOwner._id === userID) || (postDetails.postOwnerID === userID)"
+                                            @click="deleteComment(x._id)" class="btn btn-sm btn-danger"><i
+                                                class="fa-regular fa-trash-can"></i></button>
                                     </div>
 
                                 </div>
@@ -104,20 +109,22 @@ export default {
             commentContent: null,
             comments: {},
             isLoading: false,
-            fullPage: true
+            fullPage: true,
+            likeStatus: null
         }
     },
     created() {
         this.getPostInfo();
-        
-       
+
+
     },
     methods: {
         getComments() {
             axios.get(this.url + "getComment/" + this.postID).then(res => {
                 if (res.status === 200) {
                     this.comments = res.data;
-                    this.isLoading = false;
+                    this.getLikeStatus();
+                    
                 }
             }).catch(err => {
                 console.log("There is an error." + err.message);
@@ -133,6 +140,7 @@ export default {
             axios.post(this.url + "toComment", { newComment: newComment }).then(res => {
                 if (res.status === 200) {
                     this.getComments();
+                    this.getCommentCount();
                     this.commentContent = "";
                 }
             }).catch(err => {
@@ -152,7 +160,7 @@ export default {
                             this.postDetails.postOwnerID = res.data.post[0].postOwner._id,
                             this.postDetails.postOwnerNick = res.data.post[0].postOwner.userNick,
                             this.postDetails.postID = res.data.post[0]._id;
-                            this.getUserInfo();
+                        this.getUserInfo();
                     }
                 }
             ).catch(err => {
@@ -180,7 +188,7 @@ export default {
             axios.get(this.url + "getCommentCount" + "/" + this.postID).then(res => {
                 if (res.status === 200) {
                     this.postDetails.postCommentCount = res.data.count;
-                    
+
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
@@ -210,14 +218,62 @@ export default {
                 console.log("There is an error : " + err.message);
             })
         },
-        deleteComment(comment_id) {
-            axios.put(this.url + "deleteComment" + "/" + comment_id).then(res => {
+        async deleteComment(comment_id) {
+            await axios.put(this.url + "deleteComment" + "/" + comment_id).then(res => {
                 if (res.status === 200) {
                     this.getComments();
+                    this.getCommentCount();
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
             })
+        },
+        likePost() {
+            let data = {
+                postID: this.postID,
+                userID: this.userID
+            }
+            axios.post(this.url + "/likePost", { data: data }).then(res => {
+                if (res.status === 200) {
+                    this.likeStatus = true
+                    this.getLikeStatus();
+                    this.getLikeCount();
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+        },
+        dislikePost() {
+            let data = {
+                postID: this.postID,
+                userID: this.userID
+            }
+            axios.delete(this.url + "/dislikePost" + "/" + this.userID + "&" + this.postID).then(res => {
+                if (res.status === 200) {
+                    this.likeStatus = false
+                    this.getLikeStatus();
+                    this.getLikeCount();
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+        },
+        getLikeStatus() {
+            axios.get(this.url + "/getLikeStatus" + "/" + this.userID + "&" + this.postID).then(res => {
+                if (res.status === 200 && res.data.result == true) {
+                    let item = document.getElementById("likeButton");
+                    item.innerHTML = '<i class="fa-solid fa-heart"></i> Beğenmekten Vazgeç';
+                    this.likeStatus = true;
+                }
+                else {
+                    let item = document.getElementById("likeButton");
+                    item.innerHTML = '<i class="fa-solid fa-heart"></i> Beğen';
+                    this.likeStatus = false;
+                }
+            }).catch(err => {
+                console.log("There is an error : " + err.message);
+            })
+            this.isLoading = false;
         }
     }
 }
