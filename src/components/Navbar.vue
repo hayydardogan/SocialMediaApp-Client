@@ -15,9 +15,7 @@
                 </div>
                 <div>
                     <RouterLink to="/Messages" class="btn btn-success btn-sm position-relative"><i
-                            class="fa-regular fa-message"></i><span
-                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                        </span></RouterLink>
+                            class="fa-regular fa-message"></i></RouterLink>
                 </div>
                 <div>
                     <RouterLink to="/Notifications" class="btn btn-success btn-sm position-relative" id="notificationBtn" @click="readNotification()"><i class="fa-regular fa-bell"></i></RouterLink>

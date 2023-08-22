@@ -8,7 +8,7 @@ import Navbar from '../components/Navbar.vue'
 
 body {
     background-color: #eee;
-    
+
 }
 
 .card {
@@ -79,11 +79,11 @@ body {
     margin-right: 7px;
 }
 
-.resultItem{
+.resultItem {
     padding: 10px;
 }
 
-.resultItem:hover{
+.resultItem:hover {
     background-color: #eee;
     cursor: pointer;
 }
@@ -105,7 +105,8 @@ body {
                             v-model="searchText">
                     </div>
                     <div class="mt-3" v-for="x in result">
-                        <RouterLink :to="'/Profile/' + x.userNick" style="text-decoration: none; color:#0f0f0f ;" class="resultItem d-flex justify-content-between align-items-center">
+                        <RouterLink :to="'/Profile/' + x.userNick" style="text-decoration: none; color:#0f0f0f ;"
+                            class="resultItem d-flex justify-content-between align-items-center">
                             <div class="d-flex flex-row align-items-center">
                                 <span class="star"><img :src="x.userImage" alt=""></span>
                                 <div class="d-flex flex-column">
@@ -138,6 +139,7 @@ export default {
             result: [],
             searchText: null,
             url: "http://localhost:3000/api/",
+            title: "Kullanıcı ara"
         }
     },
     methods: {
@@ -154,6 +156,9 @@ export default {
                 this.result = []
             }
         }
+    },
+    created() {
+        window.document.title = this.title;
     }
 }
 </script>

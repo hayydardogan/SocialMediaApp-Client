@@ -93,6 +93,7 @@ export default {
         return {
             postID: this.$route.params.id,
             userID: null,
+            userNick: null,
             postDetails: {
                 postID: null,
                 postOwnerID: null,
@@ -110,12 +111,13 @@ export default {
             comments: {},
             isLoading: false,
             fullPage: true,
-            likeStatus: null
+            likeStatus: null,
+            title: "Gönderi Detayları"
         }
     },
     created() {
         this.getPostInfo();
-
+        window.document.title = this.title;
 
     },
     methods: {
@@ -197,7 +199,8 @@ export default {
         getUserInfo() {
             axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
-                    this.userID = res.data.user._id
+                    this.userID = res.data.user._id;
+                    this.userNick = res.data.user.userNick;
                     this.getComments();
                 }
 
@@ -212,7 +215,7 @@ export default {
         deletePost(post_id) {
             axios.post(this.url + "deletePost" + "/" + post_id).then(res => {
                 if (res.status === 200) {
-                    this.$router.push("/");
+                    this.$router.push("/Profile/" + this.userNick);
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);

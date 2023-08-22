@@ -57,6 +57,7 @@
 
 <script>
 import axios from "axios"
+import Toastify from 'toastify-js'
 export default {
     data() {
         return {
@@ -78,6 +79,20 @@ export default {
                 if (res.status === 200) {
                     localStorage.setItem("token", res.data.token);
                     this.$router.push("/");
+                }
+                if(res.status === 201){
+                    Toastify({
+                    text: 'Kullanıcı adı veya şifre yanlış.',
+                    duration: 3000,
+                    newWindow: true,
+                    gravity: "bottom", // `top` or `bottom`
+                    position: "left", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    style: {
+                        background: "#dc3545",
+                    },
+
+                }).showToast();
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);

@@ -9,6 +9,7 @@ import moment from 'moment'
 /* The actual timeline (the vertical ruler) */
 .main-timeline {
     position: relative;
+    height: auto;
 }
 
 /* The actual timeline (the vertical ruler) */
@@ -16,7 +17,7 @@ import moment from 'moment'
     content: "";
     position: absolute;
     width: 6px;
-    background-color: #939597;
+    background-color: #198754;
     top: 0;
     bottom: 0;
     left: 50%;
@@ -37,8 +38,8 @@ import moment from 'moment'
     width: 25px;
     height: 25px;
     right: -13px;
-    background-color: #939597;
-    border: 5px solid #f5df4d;
+    background-color: #ffffff;
+    border: 5px solid #198754;
     top: 15px;
     border-radius: 50%;
     z-index: 1;
@@ -125,11 +126,15 @@ import moment from 'moment'
 }
 </style>
 <template >
+    <div class="vl-parent">
+        <loading v-model:active="isLoading" loader="bars" color="#198754" />
+
+    </div>
     <Navbar />
 
 
 
-    <section style="background-color: #F0F2F5; height: 100vh;">
+    <section style="background-color: #F0F2F5; height: auto; min-height: 100vh;">
 
         <div class="container py-5">
             <div class="new-post d-flex justify-content-end mb-3">
@@ -164,7 +169,7 @@ import moment from 'moment'
                     </div>
                 </div>
             </div>
-            <div v-if="posts.length <= 0" class="alert alert-info">
+            <div v-if="control == -1" class="alert alert-info">
                 <h4 class="alert-heading">Sessizlik!</h4>
                 <p>Şimdilik burada görüntülenecek bir şey bulunamadı.</p>
                 <hr>
@@ -192,7 +197,7 @@ import moment from 'moment'
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-white">
                             <div>
-                                
+
                             </div>
                             <div class="show-post">
                                 <RouterLink :to="{ name: 'postdetailswithid', params: { id: x._id } }"
@@ -209,7 +214,8 @@ import moment from 'moment'
 
 <script>
 import axios from 'axios'
-
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
 export default {
     data() {
         return {
@@ -219,7 +225,11 @@ export default {
                 postOwner: null,
             },
             userID: null,
-            posts: []
+            posts: [],
+            isLoading: false,
+            fullPage: true,
+            control: 0,
+            title: "Anasayfa"
         }
     },
     created() {
@@ -241,13 +251,18 @@ export default {
         getPosts() {
             axios.get(this.url + "getPosts" + "/" + this.userID).then(res => {
                 if (res.status === 200) {
-                    this.posts = res.data.myPosts
+                    
+                    this.posts = res.data.myPosts;
+                    this.isLoading = false;
+                    window.document.title = this.title;
+                    if (res.data.myPosts.length <= 0) this.control = -1;
                 }
             }).catch(err => {
                 console.log("There is an error : " + err.message);
             })
         },
         getUserInfo() {
+            this.isLoading = true;
             axios.get(this.url + "getUserInfo", { headers: { token: localStorage.getItem("token") } }).then(res => {
                 if (res.status === 200) {
                     this.userID = res.data.user._id

@@ -80,7 +80,7 @@
 </template>
 
 <script>
-
+import Toastify from 'toastify-js'
 import axios from "axios";
 export default {
     data() {
@@ -109,18 +109,56 @@ export default {
             }
 
             axios.post(this.url + "addNewUser", newUser).then(res => {
-                if (res.status === 200 && res.data.result == true) {
-                    let item = document.getElementById("infoAlert");
-                    item.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right: 15px"></i>' + "Başarılı bir şekilde kayıt oldunuz. Giriş yapabilirsiniz.";
-                    this.User.userName = "",
-                        this.User.userSurname = "",
-                        this.User.userEmail = "",
-                        this.User.userNick = "",
-                        this.User.userPassword = ""
-                    item.style.display = "block";
-                    setTimeout(() => {
-                        this.$router.push("/Login");
-                    }, 1750);
+                if (res.status === 200) {
+                    Toastify({
+                            text: 'Başarıyla kayıt oldunuz. Giriş yapabilirsiniz.',
+                            duration: 3000,
+                            newWindow: true,
+                            gravity: "bottom", 
+                            position: "left", 
+                            stopOnFocus: true, 
+                            style: {
+                                background: "#198754",
+                            },
+
+                        }).showToast();
+                    if (res.data.result == true) {
+                        this.User.userName = "";
+                        this.User.userSurname = "";
+                        this.User.userEmail = "";
+                        this.User.userNick = "";
+                        this.User.userPassword = "";
+                    }
+
+                    if (res.data.result == "email") {
+                        Toastify({
+                            text: 'Bu e-posta adresi sistemde zaten kayıtlı.',
+                            duration: 3000,
+                            newWindow: true,
+                            gravity: "bottom", 
+                            position: "left", 
+                            stopOnFocus: true, 
+                            style: {
+                                background: "#0d6efd",
+                            },
+
+                        }).showToast();
+                    }
+                    if(res.data.result == "usernick"){
+                        Toastify({
+                            text: 'Bu kullanıcı adı sistemde zaten kayıtlı.',
+                            duration: 3000,
+                            newWindow: true,
+                            gravity: "bottom", 
+                            position: "left", 
+                            stopOnFocus: true, 
+                            style: {
+                                background: "#0d6efd",
+                            },
+
+                        }).showToast();
+                    }
+
                 }
 
             }).catch(err => {

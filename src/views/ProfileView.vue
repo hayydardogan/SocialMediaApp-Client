@@ -15,11 +15,12 @@ import moment from 'moment'
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col ">
                     <div class="card">
-                        <div class="rounded-top text-white d-flex flex-row"
-                            :style="{ backgroundImage: `url(${userInfo.userCoverImage})`, height: '200px', backgroundSize: 'cover' }">
+                        <div class="rounded-top text-white d-flex flex-row" :style="{
+                            backgroundImage: `url(${userInfo.userCoverImage})`, height: '200px', backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }">
                             <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
                                 <img :src="userInfo.userImage" alt="Generic placeholder image"
-                                    class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
+                                    class="img-fluid img-thumbnail mt-4 mb-2"
+                                    style="width: 150px; z-index: 1; ">
                                 <RouterLink v-if="userInfo.userNick == activeUser.userNick" to="/Settings" type="button"
                                     class="btn btn-outline-success" data-mdb-ripple-color="dark" style="z-index: 1;">
                                     <i class="fa-solid fa-gear"></i>
@@ -74,10 +75,11 @@ import moment from 'moment'
                                 <div class="alert alert-info">Henüz hiçbir paylaşım yapmadın.</div>
                             </div>
                             <div v-else class="row g-2">
-                                <div v-for="x in posts" class="card bg-light mb-3">
+                                <div v-for=" x  in  posts " class="card bg-light mb-3">
                                     <div class="card-header d-flex justify-content-between">
                                         <div style="display: flex; gap: 15px; align-items: center;">
-                                            <img :src="x.postOwner.userImage" class="rounded-circle" style="width: 30px;" />
+                                            <img :src="x.postOwner.userImage" class="rounded-circle"
+                                                style="width: 30px;" />
                                             <span>{{ x.postOwner.userName }} {{ x.postOwner.userSurname }}</span>
                                         </div>
                                         <div style="display: flex;align-items: center;">
@@ -137,7 +139,7 @@ export default {
             likeCount: 0,
             commentCount: 0,
             followRelation: false,
-            title: null,
+            title: "Profil",
             isLoading: false,
             fullPage: true
         }
@@ -145,18 +147,19 @@ export default {
     methods: {
         getUserInfoByNick() {
             this.isLoading = true;
-            let nick = this.$route.params.nick;
+            const nick = this.$route.params.nick;
             axios.get(this.url + "getUserInfoByNick/" + nick).then(res => {
                 if (res.status === 200) {
-                    this.userInfo.userName = res.data.user.userName,
-                        this.userInfo.userSurname = res.data.user.userSurname,
-                        this.userInfo.userEmail = res.data.user.userEmail,
-                        this.userInfo.userNick = res.data.user.userNick,
-                        this.userInfo.userImage = res.data.user.userImage,
-                        this.userInfo.userID = res.data.user._id,
-                        this.userInfo.userBiography = res.data.user.userBiography
-                    this.userInfo.userCoverImage = res.data.user.userCoverImage
-                    this.title = res.data.user.userName + " " + res.data.user.userSurname
+                    this.userInfo.userName = res.data.user.userName;
+                    this.userInfo.userSurname = res.data.user.userSurname;
+                    this.userInfo.userEmail = res.data.user.userEmail;
+                    this.userInfo.userNick = res.data.user.userNick;
+                    this.userInfo.userImage = res.data.user.userImage;
+                    this.userInfo.userID = res.data.user._id;
+                    this.userInfo.userBiography = res.data.user.userBiography;
+                    this.userInfo.userCoverImage = res.data.user.userCoverImage;
+                    this.title = res.data.user.userName + " " + res.data.user.userSurname;
+                    window.document.title = this.title;
                     this.getFollowCount();
 
                 }

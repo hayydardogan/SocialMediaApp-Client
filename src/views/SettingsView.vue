@@ -43,38 +43,7 @@ import Navbar from '../components/Navbar.vue'
 
     </div>
     <Navbar />
-    <!-- <div class="container mt-5" style=" background: #1A233A; border-radius: 25px; color: #bcd0f7; padding-top: 25px; padding-bottom: 50px;">
-
-        <div class="row d-flex justify-content-center">
-            <div class="col-6">
-                <h1><i class="fa-solid fa-gear"></i> AYARLAR</h1>
-                <br>
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                    <input type="text" class="form-control " placeholder="Ad" v-model="userInfo.userName">
-                    <input type="text" class="form-control" placeholder="Soyad" v-model="userInfo.userSurname">
-                </div>
-                <div class="input-group mb-3">
-                    
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-                    <input type="email" class="form-control" placeholder="E-Posta" v-model="userInfo.userEmail">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
-                    <input type="text" class="form-control" placeholder="Kullanıcı Adı" v-model="userInfo.userNick">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                    <input type="text" class="form-control" placeholder="******" v-model="userInfo.userPassword">
-                </div>
-                <div class="d-flex justify-content-end">
-                    <button class="btn btn-sm btn-primary"><i class="fa-solid fa-check"></i> GÜNCELLE</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
+    
 
     <div class="container mt-5 mb-5">
         <h1 style="text-align: center;"><i class="fa-solid fa-gears"></i> AYARLAR</h1>
@@ -235,7 +204,8 @@ export default {
                 userImage: null,
                 userBiography: null,
                 userID: null,
-                userCoverImage: null
+                userCoverImage: null,
+                
             },
             url: "http://localhost:3000/api/",
             passwordVal: {
@@ -243,7 +213,8 @@ export default {
                 newPassword2: null
             },
             isLoading: false,
-            fullPage: true
+            fullPage: true,
+            title: "Ayarlar"
         }
     },
     methods: {
@@ -351,6 +322,7 @@ export default {
     },
     created() {
         this.getUserInfo();
+        window.document.title = this.title;
     }
 }
 </script>

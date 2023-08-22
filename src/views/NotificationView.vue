@@ -108,7 +108,8 @@ export default {
                 userSurname: null,
                 userID: null,
                 userNick: null
-            }
+            },
+            title: "Bildirimler"
         }
     },
     methods: {
@@ -152,6 +153,7 @@ export default {
     },
     created() {
         this.getUserInfo();
+        window.document.title = this.title;
     }
 }
 </script>
